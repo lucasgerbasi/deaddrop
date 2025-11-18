@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { encryptFile, decryptFile } from './crypto';
 import { uploadFile, getDownloadUrl } from './api';
-import './App.css'; // We will create this file next for styling
+import './App.css';
 
 // A helper function to encode the key for the URL
 function base64UrlEncode(str) {
@@ -58,10 +58,8 @@ function App() {
         setError('');
         try {
             const hash = window.location.hash.substring(1);
-            // UPDATED: Now we get three parts from the URL hash
             const [fileID, keyStr, encodedFileName] = hash.split('/');
             const key = base64UrlDecode(keyStr);
-            // UPDATED: Decode the filename back to its original form
             const originalFileName = decodeURIComponent(encodedFileName || 'decrypted_file');
 
 
@@ -83,7 +81,6 @@ function App() {
             const url = URL.createObjectURL(decryptedBlob);
             const a = document.createElement('a');
             a.href = url;
-            // UPDATED: Use the actual filename!
             a.download = originalFileName; 
             document.body.appendChild(a);
             a.click();
@@ -128,9 +125,9 @@ function App() {
             const { fileID } = await uploadFile(encryptedBlob, setUploadProgress);
             
             const keyStr = base64UrlEncode(exportedKey);
-            // UPDATED: Encode the filename to make sure it's URL-safe
             const encodedFileName = encodeURIComponent(file.name);
-            const newShareLink = `${window.location.origin}#${fileID}/${keyStr}/${encodedFileName}`;
+            const baseUrl = window.location.href.split('#')[0];
+            const newShareLink = `${baseUrl}#${fileID}/${keyStr}/${encodedFileName}`;
             setShareLink(newShareLink);
             setView('share');
 
